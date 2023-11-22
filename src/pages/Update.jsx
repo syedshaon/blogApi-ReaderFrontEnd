@@ -1,47 +1,119 @@
 import Footer from "./Footer";
 import Navbar from "./Navbar";
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Button3 } from "../contents/Button";
 
 import { useDispatch, useSelector } from "react-redux";
 import { authActions } from "../store/authReducer";
 
-function Login() {
-  const dispatch = useDispatch();
-  const authState = useSelector((state) => state.auth);
-
+function Update() {
   const navigateTo = useNavigate();
+  const authState = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
 
-  // if (authState.isLoggedIn) {
-  //   navigateTo("/");
-  //   return;
-  // }
+  // Check if the user is logged in
+  if (!authState.isLoggedIn) {
+    // Redirect to the homepage
+    console.log("redirected");
+    navigateTo("/");
+  }
 
-  useEffect(() => {
-    // Check if the user is logged in
-    if (authState.isLoggedIn) {
-      // Redirect to the homepage
-      navigateTo("/");
-    }
-  }, [authState.isLoggedIn]);
-
+  // State to store form data
   const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
     email: "",
     password: "",
+    rpassword: "",
   });
 
+  const [emailError, setEmailError] = useState(false);
   const [responseFromBackEnd, setResponseFromBackEnd] = useState(null);
   // Handle form input changes
   const handleInputChange = (e) => {
+    console.log(editorRef.current.getContent());
     const { name, value } = e.target;
     setFormData({
       ...formData,
+      text: editorRef.current.getContent(),
       [name]: value,
     });
   };
 
-  const handleSigInSubmit = (e) => {
+  const deleteAccount = async () => {
+    const userConfirmed = confirm("Do you want to delete your account?");
+    if (userConfirmed) {
+      try {
+        const response = await fetch("http://localhost:3000/authorAPI/delete", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            authorization: authState.token,
+          },
+        });
+        console.log(response);
+
+        if (!response.ok) {
+          const responseData = await response.json();
+          setResponseFromBackEnd(responseData.message);
+          // Handle error if needed
+          return;
+        }
+
+        const responseData = await response.json();
+
+        setResponseFromBackEnd(responseData.message);
+        if (responseData.delete) {
+          localStorage.removeItem("token");
+          dispatch(authActions.logout());
+          navigateTo("/");
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        // Handle error if needed
+      }
+    } else {
+      // User clicked "Cancel" or closed the dialog
+      console.log("User canceled.");
+    }
+  };
+
+  const fetchData = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/authorAPI/update", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: authState.token,
+        },
+      });
+
+      if (!response.ok) {
+        const responseData = await response.json();
+        console.log(responseData.message);
+        // Handle error if needed
+        return;
+      }
+
+      const responseData = await response.json();
+      setFormData({
+        firstName: responseData.firstName,
+        lastName: responseData.lastName,
+        email: responseData.email,
+        password: "",
+        rpassword: "",
+      });
+    } catch (error) {
+      console.log(error);
+      // Handle error if needed
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+  const handleSignupSubmit = (e) => {
     e.preventDefault();
 
     // Call a function to send data to the backend API
@@ -51,10 +123,11 @@ function Login() {
   // Function to send data to the backend API using fetch
   const sendDataToBackend = async (data) => {
     try {
-      const response = await fetch("http://localhost:3000/authorAPI/signin", {
-        method: "POST",
+      const response = await fetch("http://localhost:3000/authorAPI/update", {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          authorization: authState.token,
         },
         body: JSON.stringify(data),
       });
@@ -70,25 +143,37 @@ function Login() {
 
       // Handle the successful response (if needed)
       const responseData = await response.json();
-      // console.log("Response from backend:", responseData);
-      localStorage.setItem("token", responseData.token);
-      dispatch(authActions.login({ firstName: responseData.firstName, token: responseData.token }));
+      // console.log("Response from backend:", responseData.message);
 
       // Hide signup form
-      setResponseFromBackEnd("Logged In Successfully. Redirecting to homepage....");
+      setResponseFromBackEnd(responseData.message);
+      // Redirect to
+      // useEffect(() => {
+      //   const timeoutId = setTimeout(() => {
+      //     // Redirect to "/login" after 1500 milliseconds (1.5 seconds)
 
-      // Redirect to "/home" after 1500 milliseconds (1.5 seconds)
+      //     navigateTo("/login");
+      //   }, 1500);
+
+      //   // Cleanup the timeout on component unmount or if the redirect happens
+      //   return () => clearTimeout(timeoutId);
+      // }, [history]);
+
+      // Redirect to "/login" after 1500 milliseconds (1.5 seconds)
       const timeoutId = setTimeout(() => {
-        navigateTo("/");
+        navigateTo("/login");
       }, 1500);
 
-      // // Cleanup the timeout on component unmount or if the redirect happens
+      // Cleanup the timeout on component unmount or if the redirect happens
       return () => clearTimeout(timeoutId);
 
       // Reset the form after successful submission
       setFormData({
+        firstName: "",
+        lastName: "",
         email: "",
         password: "",
+        rpassword: "",
       });
     } catch (err) {
       // console.log("Error sending data to backend:", err.message);
@@ -97,29 +182,75 @@ function Login() {
   };
 
   return (
-    !authState.isLoggedIn && (
-      <div>
+    authState.isLoggedIn && (
+      <>
         <Navbar />
         <div className="bg-emerald-100 h-screen relative lg:py-20">
-          {responseFromBackEnd && <h3 className="response text-orange-500 text-xl font-bold container mx-auto text-center">{responseFromBackEnd}</h3>}
+          <div className="  mx-auto text-center">
+            <span onClick={deleteAccount}>
+              <Button3 color={"orange"} text={"Delete  My Account."} />
+            </span>
+          </div>
+
+          {responseFromBackEnd && <h3 className="response my-10 text-orange-500 text-xl font-bold container mx-auto text-center">{responseFromBackEnd}</h3>}
           <div
             className="flex flex-col items-center justify-between pt-0 pr-10 pb-0 pl-10 mt-0 mr-auto mb-0 ml-auto max-w-7xl
       xl:px-5 lg:flex-row"
           >
             <div className="flex flex-col items-center justify-center w-full pt-5 pr-10 pb-20 pl-10 lg:pt-20 lg:flex-row">
+              {/* <div className="w-full bg-cover relative max-w-md lg:max-w-2xl lg:w-7/12">
+              <div className="flex flex-col items-center justify-center w-full h-full relative lg:pr-10">
+                <img src="https://res.cloudinary.com/macxenon/image/upload/v1631570592/Run_-_Health_qcghbu.png" className="btn-" />
+              </div>
+            </div> */}
               <div className="w-full mt-20 mr-0 mb-0 ml-0 relative z-10 max-w-2xl lg:mt-0 lg:w-5/12">
-                <form
-                  onSubmit={handleSigInSubmit}
-                  className="flex flex-col items-start justify-start pt-10 pr-10 pb-10 pl-10 bg-white shadow-2xl rounded-xl
-            relative z-10"
-                >
-                  <p className="w-full text-4xl font-medium text-center leading-snug font-serif">Sign In</p>
+                <form onSubmit={handleSignupSubmit} className="flex flex-col items-start justify-start pt-10 pr-10 pb-10 pl-10 bg-white shadow-2xl rounded-xl relative z-10">
+                  <p className="w-full text-4xl font-medium text-center leading-snug font-serif">Update Your account </p>
                   <div className="w-full mt-6 mr-0 mb-0 ml-0 relative space-y-8">
+                    <div className="relative">
+                      <p
+                        className="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600
+                  absolute"
+                      >
+                        First Name
+                      </p>
+                      <input
+                        value={formData.firstName}
+                        onChange={handleInputChange}
+                        required
+                        name="firstName"
+                        placeholder="John"
+                        type="text"
+                        className="border placeholder-gray-400 focus:outline-none
+                  focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white
+                  border-gray-300 rounded-md"
+                      />
+                    </div>
+                    <div className="relative">
+                      <p
+                        className="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600
+                  absolute"
+                      >
+                        Last Name
+                      </p>
+                      <input
+                        value={formData.lastName}
+                        onChange={handleInputChange}
+                        required
+                        name="lastName"
+                        placeholder="Doe"
+                        type="text"
+                        className="border placeholder-gray-400 focus:outline-none
+                  focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white
+                  border-gray-300 rounded-md"
+                      />
+                    </div>
                     <div className="relative">
                       <p className="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600 absolute">Email</p>
                       <input
                         value={formData.email}
                         onChange={handleInputChange}
+                        required
                         name="email"
                         placeholder="123@ex.com"
                         type="email"
@@ -137,13 +268,41 @@ function Login() {
                       </p>
                       <input
                         value={formData.password}
-                        onChange={handleInputChange}
+                        onChange={(e) => {
+                          setFormData({
+                            ...formData,
+                            password: e.target.value,
+                          });
+                          e.target.value === formData.rpassword ? setEmailError(false) : setEmailError(true);
+                        }}
+                        required
                         name="password"
                         placeholder="Password"
                         type="password"
-                        className="border placeholder-gray-400 focus:outline-none
-                  focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white
-                  border-gray-300 rounded-md"
+                        className={emailError ? "border-orange-500 border-2 placeholder-gray-400  w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white   rounded-md" : "false border placeholder-gray-400   w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white border-gray-300 rounded-md"}
+                      />
+                    </div>
+                    <div className="relative">
+                      <p
+                        className="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600
+                  absolute"
+                      >
+                        Repeat Password
+                      </p>
+                      <input
+                        value={formData.rpassword}
+                        onChange={(e) => {
+                          setFormData({
+                            ...formData,
+                            rpassword: e.target.value,
+                          });
+                          e.target.value === formData.password ? setEmailError(false) : setEmailError(true);
+                        }}
+                        required
+                        name="rpassword"
+                        placeholder="Repeat Password"
+                        type="password"
+                        className={emailError ? "border-orange-500 border-2  placeholder-gray-400  w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white   rounded-md" : "false border placeholder-gray-400   w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white border-gray-300 rounded-md"}
                       />
                     </div>
                     <div className="relative">
@@ -344,10 +503,11 @@ function Login() {
             </div>
           </div>
         </div>
+
         <Footer />
-      </div>
+      </>
     )
   );
 }
 
-export default Login;
+export default Update;

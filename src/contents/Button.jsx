@@ -10,4 +10,8 @@ export const Button2 = ({ url }) => {
   );
 };
 
+export const Button3 = ({ text, color, hoverBG }) => {
+  return <button className={`h-11 p-2.5 cursor-pointer transition duration-200   ease ${hoverBG === "orange" ? "hover:text-white border hover:border-white hover:bg-orange-500" : "hover:text-orange-500 hover:bg-white hover:border hover:border-orange-500"}   ${color === "orange" ? "text-white bg-orange-500" : "text-black border border-orange-500"} rounded-10px rounded min-w-[93px]  mx-2 text-base font-medium `}>{text}</button>;
+};
+
 export default Button;

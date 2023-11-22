@@ -4,28 +4,31 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useDispatch, useSelector } from "react-redux";
+import Tiny_MCE from "../contents/Tiny_MCE";
 
-function Signup() {
+function Create_Post() {
   const navigateTo = useNavigate();
   const authState = useSelector((state) => state.auth);
 
-  useEffect(() => {
-    // Check if the user is logged in
-    if (authState.isLoggedIn) {
-      // Redirect to the homepage
-      navigateTo("/");
-    }
-  }, [authState.isLoggedIn]);
+  // Check if the user is logged in
+  if (!authState.isLoggedIn) {
+    // Redirect to the homepage
+    console.log("redirected");
+    navigateTo("/");
+  }
+
+  //   const [selectedOption, setSelectedOption] = useState("draft");
+
+  //   const handleOptionChange = (event) => {
+  //     setSelectedOption(event.target.value);
+  //   };
+
   // State to store form data
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    rpassword: "",
+    title: "",
+    published: "draft",
   });
 
-  const [emailError, setEmailError] = useState(false);
   const [responseFromBackEnd, setResponseFromBackEnd] = useState(null);
   // Handle form input changes
   const handleInputChange = (e) => {
@@ -36,20 +39,28 @@ function Signup() {
     });
   };
 
-  const handleSignupSubmit = (e) => {
+  const [editorContent, setEditorContent] = useState("");
+
+  const handleEditorChange = (content, editor) => {
+    setEditorContent(content);
+  };
+
+  const handleNewPostSubmit = (e) => {
     e.preventDefault();
+    // console.log(formData);
 
     // Call a function to send data to the backend API
-    sendDataToBackend(formData);
+    sendDataToBackend({ title: formData.title, text: editorContent, published: formData.published });
   };
 
   // Function to send data to the backend API using fetch
   const sendDataToBackend = async (data) => {
     try {
-      const response = await fetch("http://localhost:3000/authorAPI/signup", {
+      const response = await fetch("http://localhost:3000/authorAPI/posts", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          authorization: authState.token,
         },
         body: JSON.stringify(data),
       });
@@ -83,7 +94,7 @@ function Signup() {
 
       // Redirect to "/login" after 1500 milliseconds (1.5 seconds)
       const timeoutId = setTimeout(() => {
-        navigateTo("/login");
+        navigateTo("/");
       }, 2500);
 
       // Cleanup the timeout on component unmount or if the redirect happens
@@ -91,11 +102,8 @@ function Signup() {
 
       // Reset the form after successful submission
       setFormData({
-        firstName: "",
-        lastName: "",
-        email: "",
-        password: "",
-        rpassword: "",
+        title: "",
+        published: "draft",
       });
     } catch (err) {
       // console.log("Error sending data to backend:", err.message);
@@ -112,29 +120,23 @@ function Signup() {
           className="flex flex-col items-center justify-between pt-0 pr-10 pb-0 pl-10 mt-0 mr-auto mb-0 ml-auto max-w-7xl
       xl:px-5 lg:flex-row"
         >
-          <div className="flex flex-col items-center justify-center w-full pt-5 pr-10 pb-20 pl-10 lg:pt-20 lg:flex-row">
+          <div className="flex flex-col items-center justify-center w-full   ">
             {/* <div className="w-full bg-cover relative max-w-md lg:max-w-2xl lg:w-7/12">
               <div className="flex flex-col items-center justify-center w-full h-full relative lg:pr-10">
                 <img src="https://res.cloudinary.com/macxenon/image/upload/v1631570592/Run_-_Health_qcghbu.png" className="btn-" />
               </div>
             </div> */}
-            <div className="w-full mt-20 mr-0 mb-0 ml-0 relative z-10 max-w-2xl lg:mt-0 lg:w-5/12">
-              <form onSubmit={handleSignupSubmit} className="flex flex-col items-start justify-start pt-10 pr-10 pb-10 pl-10 bg-white shadow-2xl rounded-xl relative z-10">
-                <p className="w-full text-4xl font-medium text-center leading-snug font-serif">Sign up for an account </p>
+            <div className="relative  mt-5 mr-0 mb-0 ml-0  z-10  lg:mt-0 container">
+              <form onSubmit={handleNewPostSubmit} className="flex flex-col items-start justify-start pt-10 pr-10 pb-10 pl-10 bg-white shadow-2xl rounded-xl relative z-10">
+                <p className="w-full text-4xl font-medium text-center leading-snug font-serif">Create a New Post. </p>
                 <div className="w-full mt-6 mr-0 mb-0 ml-0 relative space-y-8">
                   <div className="relative">
-                    <p
-                      className="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600
-                  absolute"
-                    >
-                      First Name
-                    </p>
                     <input
-                      value={formData.firstName}
+                      value={formData.title}
                       onChange={handleInputChange}
                       required
-                      name="firstName"
-                      placeholder="John"
+                      name="title"
+                      placeholder="Write Post Title Here."
                       type="text"
                       className="border placeholder-gray-400 focus:outline-none
                   focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white
@@ -142,84 +144,21 @@ function Signup() {
                     />
                   </div>
                   <div className="relative">
-                    <p
-                      className="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600
-                  absolute"
-                    >
-                      Last Name
-                    </p>
-                    <input
-                      value={formData.lastName}
-                      onChange={handleInputChange}
-                      required
-                      name="lastName"
-                      placeholder="Doe"
-                      type="text"
-                      className="border placeholder-gray-400 focus:outline-none
-                  focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white
-                  border-gray-300 rounded-md"
-                    />
+                    <Tiny_MCE handleEditorChange={handleEditorChange} />
                   </div>
-                  <div className="relative">
-                    <p className="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600 absolute">Email</p>
-                    <input
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      required
-                      name="email"
-                      placeholder="123@ex.com"
-                      type="email"
-                      className="border placeholder-gray-400 focus:outline-none
-                  focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white
-                  border-gray-300 rounded-md"
-                    />
+                  <div className="flex items-center space-x-2">
+                    <p className="text-lg">Ready to publish the post?</p>
+                    <input name="published" type="radio" id="option1" value="publish" checked={formData.published === "publish"} onChange={handleInputChange} className="text-blue-500 focus:ring-blue-400" />
+                    <label htmlFor="option1" className="text-gray-700">
+                      Publish
+                    </label>
+
+                    <input name="published" type="radio" id="option2" value="draft" checked={formData.published === "draft"} onChange={handleInputChange} className="text-blue-500 focus:ring-blue-400" />
+                    <label htmlFor="option2" className="text-gray-700">
+                      Save as Draft
+                    </label>
                   </div>
-                  <div className="relative">
-                    <p
-                      className="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600
-                  absolute"
-                    >
-                      Password
-                    </p>
-                    <input
-                      value={formData.password}
-                      onChange={(e) => {
-                        setFormData({
-                          ...formData,
-                          password: e.target.value,
-                        });
-                        e.target.value === formData.rpassword ? setEmailError(false) : setEmailError(true);
-                      }}
-                      required
-                      name="password"
-                      placeholder="Password"
-                      type="password"
-                      className={emailError ? "border-orange-500 border-2 placeholder-gray-400  w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white   rounded-md" : "false border placeholder-gray-400   w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white border-gray-300 rounded-md"}
-                    />
-                  </div>
-                  <div className="relative">
-                    <p
-                      className="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600
-                  absolute"
-                    >
-                      Repeat Password
-                    </p>
-                    <input
-                      value={formData.rpassword}
-                      onChange={(e) => {
-                        setFormData({
-                          ...formData,
-                          rpassword: e.target.value,
-                        });
-                        e.target.value === formData.password ? setEmailError(false) : setEmailError(true);
-                      }}
-                      required
-                      name="rpassword"
-                      placeholder="Repeat Password"
-                      type="password"
-                      className={emailError ? "border-orange-500 border-2  placeholder-gray-400  w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white   rounded-md" : "false border placeholder-gray-400   w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white border-gray-300 rounded-md"}
-                    />
-                  </div>
+
                   <div className="relative">
                     <button
                       className="w-full inline-block pt-4 pr-5 pb-4 pl-5 text-xl font-medium text-center text-white bg-emerald-500
@@ -424,4 +363,4 @@ function Signup() {
   );
 }
 
-export default Signup;
+export default Create_Post;

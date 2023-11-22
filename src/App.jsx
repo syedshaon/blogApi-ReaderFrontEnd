@@ -12,20 +12,23 @@ function App() {
 
   const validateLoginStatus = async () => {
     // console.log("validation ran");
-    if (authState.token) {
+    if (localStorage.getItem("token")) {
       try {
         const response = await fetch("http://localhost:3000/authorAPI/validateLoginStatus", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            authorization: authState.token,
+            authorization: localStorage.getItem("token"),
           },
         });
 
         const responseData = await response.json();
         // console.log(responseData);
         if (responseData.firstName) {
-          dispatch(authActions.login({ firstName: responseData.firstName, token: authState.token }));
+          dispatch(authActions.login({ firstName: responseData.firstName, token: localStorage.getItem("token") }));
+        } else {
+          localStorage.removeItem("token");
+          dispatch(authActions.logout());
         }
       } catch (error) {
         // console.error("Error in validateLoginStatus:", error);

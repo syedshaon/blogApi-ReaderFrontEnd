@@ -1,19 +1,45 @@
 import NavElmnt from "../contents/NavElmnt";
-import Button from "../contents/Button";
+import Button, { Button3 } from "../contents/Button";
+
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
-
+// import Logout from "./Logout";
+import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { authActions } from "../store/authReducer";
 
 const Navbar = () => {
   const dispatch = useDispatch();
   const authState = useSelector((state) => state.auth);
+  const navigateTo = useNavigate();
 
   const [isMenuOpen, setMenuOpen] = useState(false);
 
   const closeMenu = () => {
     setMenuOpen(false);
+  };
+  const Logout = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/authorAPI/signout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: authState.token,
+        },
+      });
+
+      const responseData = await response.json();
+
+      if (responseData.logout === true) {
+        localStorage.removeItem("token");
+        dispatch(authActions.logout());
+        navigateTo("/");
+      } else {
+        console.log(responseData);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -27,43 +53,38 @@ const Navbar = () => {
         </NavLink>
 
         <nav className="lg:flex hidden items-center space-x-30">
-          <ul className="lg:flex hidden items-center space-x-30">
-            <NavElmnt onClick={closeMenu}>
+          {/* <NavElmnt onClick={closeMenu}>
               <NavLink to="/" className={({ isActive }) => (isActive ? "underline" : "notActive")} end>
                 Home
               </NavLink>
-            </NavElmnt>
-            {authState.isLoggedIn && <p>Hello {authState.firstName}!</p>}
-            {authState.isLoggedIn && (
-              <NavElmnt onClick={closeMenu}>
-                <NavLink to="/new_post" className={({ isActive }) => (isActive ? "underline" : "notActive")}>
-                  Create a new post
-                </NavLink>
-              </NavElmnt>
-            )}
-          </ul>
+            </NavElmnt> */}
+          {authState.isLoggedIn && <p className="mr-5">Hello {authState.firstName}!</p>}
+
+          {authState.isLoggedIn && (
+            <NavLink to="/new_post">
+              <Button text="Create a new post" hoverBG="emerald" />
+            </NavLink>
+          )}
+          {authState.isLoggedIn && (
+            <NavLink to="/update">
+              <Button text="Update Profile" color="emerald" />
+            </NavLink>
+          )}
 
           {!authState.isLoggedIn && (
-            <NavLink to="/login" className={({ isActive }) => (isActive ? "underline" : "notActive")}>
+            <NavLink to="/login">
               <Button text="Login" hoverBG="emerald" />
             </NavLink>
           )}
           {!authState.isLoggedIn && (
-            <NavLink to="/signup" className={({ isActive }) => (isActive ? "underline" : "notActive")}>
+            <NavLink to="/signup">
               <Button text="Sign Up" color="emerald" />
             </NavLink>
           )}
 
           {authState.isLoggedIn && (
-            <NavLink
-              onClick={() => {
-                console.log("works");
-                localStorage.removeItem("token");
-                dispatch(authActions.logout());
-              }}
-              className={({ isActive }) => (isActive ? "underline" : "notActive")}
-            >
-              <Button text="Logout" hoverBG="emerald" />
+            <NavLink onClick={Logout}>
+              <Button3 text="Logout" color="orange" />
             </NavLink>
           )}
         </nav>
