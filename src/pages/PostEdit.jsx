@@ -2,25 +2,32 @@ import Footer from "./Footer";
 import Navbar from "./Navbar";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Button3 } from "../contents/Button";
 
+import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { authActions } from "../store/authReducer";
 import Tiny_MCE from "../contents/Tiny_MCE";
 
-function Create_Post() {
+function PostEdit() {
   const navigateTo = useNavigate();
   const authState = useSelector((state) => state.auth);
 
-  //   const [selectedOption, setSelectedOption] = useState("draft");
-
-  //   const handleOptionChange = (event) => {
-  //     setSelectedOption(event.target.value);
-  //   };
+  const dispatch = useDispatch();
 
   // State to store form data
   const [formData, setFormData] = useState({
     title: "",
     published: "draft",
   });
+
+  const [editorInitialValue, setEditorInitialValue] = useState("");
+  const [editorContent, setEditorContent] = useState("");
+
+  const handleEditorChange = (content, editor) => {
+    setEditorContent(content);
+    console.log(editorContent);
+  };
 
   const [responseFromBackEnd, setResponseFromBackEnd] = useState(null);
   // Handle form input changes
@@ -32,14 +39,44 @@ function Create_Post() {
     });
   };
 
-  const editorInitialValue = "<p>Write Post Content Here.</p>";
-  const [editorContent, setEditorContent] = useState("");
+  const { postId } = useParams();
 
-  const handleEditorChange = (content, editor) => {
-    setEditorContent(content);
+  const fetchData = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/authorAPI/posts/" + postId, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: authState.token,
+        },
+      });
+
+      const responseData = await response.json();
+      console.log(responseData);
+      if (!response.ok) {
+        console.log(responseData.message);
+        // Handle error if needed
+        return;
+      }
+
+      setFormData({
+        title: responseData.title,
+        published: responseData.published,
+      });
+      //   setEditorContent(responseData.text);
+      setEditorInitialValue(responseData.text);
+      setEditorContent(responseData.text);
+    } catch (error) {
+      console.log(error);
+      // Handle error if needed
+    }
   };
 
-  const handleNewPostSubmit = (e) => {
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const handlePostEditSubmit = (e) => {
     e.preventDefault();
     // console.log(formData);
 
@@ -49,9 +86,10 @@ function Create_Post() {
 
   // Function to send data to the backend API using fetch
   const sendDataToBackend = async (data) => {
+    console.log(data);
     try {
-      const response = await fetch("http://localhost:3000/authorAPI/posts", {
-        method: "POST",
+      const response = await fetch("http://localhost:3000/authorAPI/posts/" + postId, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
           authorization: authState.token,
@@ -110,8 +148,8 @@ function Create_Post() {
               </div>
             </div> */}
             <div className="relative  mt-5 mr-0 mb-0 ml-0  z-10  lg:mt-0 container">
-              <form onSubmit={handleNewPostSubmit} className="flex flex-col items-start justify-start pt-10 pr-10 pb-10 pl-10 bg-white shadow-2xl rounded-xl relative z-10">
-                <p className="w-full text-4xl font-medium text-center leading-snug font-serif">Create a New Post. </p>
+              <form onSubmit={handlePostEditSubmit} className="flex flex-col items-start justify-start pt-10 pr-10 pb-10 pl-10 bg-white shadow-2xl rounded-xl relative z-10">
+                <p className="w-full text-4xl font-medium text-center leading-snug font-serif">Edit Post. </p>
                 <div className="w-full mt-6 mr-0 mb-0 ml-0 relative space-y-8">
                   <div className="relative">
                     <input
@@ -147,7 +185,7 @@ function Create_Post() {
                       className="w-full inline-block pt-4 pr-5 pb-4 pl-5 text-xl font-medium text-center text-white bg-emerald-500
                   rounded-lg transition duration-200 hover:bg-emerald-600 ease"
                     >
-                      Submit
+                      Update
                     </button>
                   </div>
                 </div>
@@ -346,4 +384,4 @@ function Create_Post() {
   );
 }
 
-export default Create_Post;
+export default PostEdit;

@@ -1,4 +1,4 @@
-import router from "./Router";
+import Router from "./Router";
 import { RouterProvider } from "react-router-dom";
 import { useEffect } from "react";
 // import validateLoginStatus from "./store/validateLoginStatus";
@@ -42,7 +42,7 @@ function App() {
 
   return (
     <>
-      <RouterProvider router={router} />
+      <Router />
     </>
   );
 }

@@ -10,14 +10,8 @@ import { authActions } from "../store/authReducer";
 function Update() {
   const navigateTo = useNavigate();
   const authState = useSelector((state) => state.auth);
-  const dispatch = useDispatch();
 
-  // Check if the user is logged in
-  if (!authState.isLoggedIn) {
-    // Redirect to the homepage
-    console.log("redirected");
-    navigateTo("/");
-  }
+  const dispatch = useDispatch();
 
   // State to store form data
   const [formData, setFormData] = useState({
@@ -52,18 +46,14 @@ function Update() {
             authorization: authState.token,
           },
         });
-        console.log(response);
+        const responseData = await response.json();
+        setResponseFromBackEnd(responseData.message);
 
         if (!response.ok) {
-          const responseData = await response.json();
-          setResponseFromBackEnd(responseData.message);
           // Handle error if needed
           return;
         }
 
-        const responseData = await response.json();
-
-        setResponseFromBackEnd(responseData.message);
         if (responseData.delete) {
           localStorage.removeItem("token");
           dispatch(authActions.logout());
@@ -89,14 +79,13 @@ function Update() {
         },
       });
 
+      const responseData = await response.json();
       if (!response.ok) {
-        const responseData = await response.json();
         console.log(responseData.message);
         // Handle error if needed
         return;
       }
 
-      const responseData = await response.json();
       setFormData({
         firstName: responseData.firstName,
         lastName: responseData.lastName,
