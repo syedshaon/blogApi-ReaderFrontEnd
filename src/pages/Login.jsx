@@ -57,6 +57,8 @@ function Login() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
+
+        credentials: "include",
       });
 
       if (!response.ok) {
@@ -67,12 +69,13 @@ function Login() {
         // throw new Error("Network response was not ok");
         return;
       }
-
       // Handle the successful response (if needed)
       const responseData = await response.json();
-      // console.log("Response from backend:", responseData);
+      console.log("Response from backend:", responseData);
+
       localStorage.setItem("token", responseData.token);
-      dispatch(authActions.login({ firstName: responseData.firstName, token: responseData.token }));
+      localStorage.setItem("expire", responseData.expire);
+      dispatch(authActions.login({ firstName: responseData.firstName, token: responseData.token, expire: responseData.expire }));
 
       // Hide signup form
       setResponseFromBackEnd("Logged In Successfully. Redirecting to homepage....");

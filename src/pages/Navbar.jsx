@@ -32,6 +32,7 @@ const Navbar = () => {
 
       if (responseData.logout === true) {
         localStorage.removeItem("token");
+        localStorage.removeItem("expire");
         dispatch(authActions.logout());
         navigateTo("/");
       } else {

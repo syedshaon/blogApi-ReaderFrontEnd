@@ -1,23 +1,26 @@
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import { NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 
-const postsData = [
-  {
-    _id: 1,
-    title: "Sample Post",
-    text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. ipsum dolor sit amet, consectetur adipiscing elit. ipsum dolor sit amet, consectetur adipiscing elit. ...",
-  },
-  // Add more posts as needed
-];
+// const postsData = [
+//   {
+//     _id: 1,
+//     title: "Sample Post",
+//     text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. ipsum dolor sit amet, consectetur adipiscing elit. ipsum dolor sit amet, consectetur adipiscing elit. ...",
+//   },
+//   // Add more posts as needed
+// ];
 
 function Home() {
   const authState = useSelector((state) => state.auth);
-  const [posts, setPosts] = useState(postsData);
+  const [posts, setPosts] = useState([]);
   const [msg, setMsg] = useState("");
+  const [responseFromBackEnd, setResponseFromBackEnd] = useState(null);
+  const navigateTo = useNavigate();
 
   const fetchData = async () => {
     try {
@@ -30,7 +33,7 @@ function Home() {
       });
 
       const responseData = await response.json();
-      console.log(responseData);
+      // console.log(responseData);
       if (!response.ok) {
         console.log(responseData.message);
         // Handle error if needed
@@ -54,15 +57,55 @@ function Home() {
     fetchData();
   }, []);
 
-  const handleEdit = (postId) => {
-    // Implement edit functionality, e.g., navigate to edit page
-    console.log(`Edit post with id ${postId}`);
-  };
-
-  const handleDelete = (postId) => {
+  const handleDelete = async (postId) => {
     // Implement delete functionality
     // setPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId));
-    console.log(`Delete post with id ${postId}`);
+    // console.log(`Delete post with id ${postId}`);
+
+    try {
+      const response = await fetch("http://localhost:3000/authorAPI/posts/" + postId, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: authState.token,
+        },
+      });
+
+      const responseData = await response.json();
+      // console.log(responseData);
+
+      if (!response.ok) {
+        // console.log("Response from backend:", responseData.message);
+        setResponseFromBackEnd(responseData.message);
+        // console.error("Error sending data to backend:", response);
+        // throw new Error("Network response was not ok");
+        return;
+      }
+
+      // Handle the successful response (if needed)
+
+      // console.log("Response from backend:", responseData.message);
+
+      // Hide signup form
+      setResponseFromBackEnd(responseData.message);
+
+      // Redirect to "/login" after 1500 milliseconds (1.5 seconds)
+      const timeoutId = setTimeout(() => {
+        navigateTo(0);
+      }, 2500);
+
+      // Cleanup the timeout on component unmount or if the redirect happens
+      return () => clearTimeout(timeoutId);
+
+      // Reset the form after successful submission
+      setFormData({
+        title: "",
+        published: "draft",
+      });
+    } catch (err) {
+      // console.log("Error sending data to backend:", err.message);
+      setResponseFromBackEnd("Error sending data to backend: " + err.message);
+    }
   };
 
   const DateFormat = {
@@ -77,6 +120,7 @@ function Home() {
 
       <div className="container mx-auto mt-8 mb-16">
         <h1 className="text-3xl font-bold mb-4">{posts.length > 0 ? "Post List" : "You have no posts yet."}</h1>
+        {responseFromBackEnd && <h3 className="response text-orange-500 text-xl font-bold container mx-auto text-center">{responseFromBackEnd}</h3>}
         <div className="grid grid-cols-1  gap-4">
           {posts.length > 0 &&
             posts.map((post) => (

@@ -1,18 +1,22 @@
 import { createSlice } from "@reduxjs/toolkit";
 const authSlice = createSlice({
   name: "auth",
-  initialState: { isLoggedIn: false, firstName: "", token: localStorage.getItem("token") },
+  initialState: { isLoggedIn: false, firstName: "", token: localStorage.getItem("token"), expire: localStorage.getItem("expire") },
   reducers: {
     login: (state, action) => {
       state.isLoggedIn = true;
       state.firstName = action.payload.firstName;
       state.token = action.payload.token;
+      if (action.payload.expire) {
+        state.expire = action.payload.expire;
+      }
       //   localStorage.setItem("token", action.payload.token);
     },
     logout: (state, action) => {
       state.isLoggedIn = false;
       state.firstName = "";
       state.token = null;
+      state.expire = null;
       //   localStorage.removeItem("token");
       //   clear cookie
     },
