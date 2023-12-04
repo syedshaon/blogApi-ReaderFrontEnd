@@ -9,7 +9,7 @@ const validateLoginStatus = async () => {
 
   if (authState.token) {
     try {
-      const response = await fetch("http://localhost:3000/authorAPI/validateLoginStatus", {
+      const response = await fetch("http://localhost:3000/blogsAPI/validateLoginStatus", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

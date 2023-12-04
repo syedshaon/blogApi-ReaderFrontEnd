@@ -20,8 +20,9 @@ const Navbar = () => {
   };
   const Logout = async () => {
     try {
-      const response = await fetch("http://localhost:3000/authorAPI/signout", {
+      const response = await fetch("http://localhost:3000/blogsAPI/signout", {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           authorization: authState.token,
@@ -61,11 +62,6 @@ const Navbar = () => {
             </NavElmnt> */}
           {authState.isLoggedIn && <p className="mr-5">Hello {authState.firstName}!</p>}
 
-          {authState.isLoggedIn && (
-            <NavLink to="/new_post">
-              <Button text="Create a new post" hoverBG="emerald" />
-            </NavLink>
-          )}
           {authState.isLoggedIn && (
             <NavLink to="/update">
               <Button text="Update Profile" color="emerald" />

@@ -26,11 +26,10 @@ function Update() {
   const [responseFromBackEnd, setResponseFromBackEnd] = useState(null);
   // Handle form input changes
   const handleInputChange = (e) => {
-    console.log(editorRef.current.getContent());
+    // console.log(editorRef.current.getContent());
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      text: editorRef.current.getContent(),
       [name]: value,
     });
   };
@@ -39,8 +38,9 @@ function Update() {
     const userConfirmed = confirm("Do you want to delete your account?");
     if (userConfirmed) {
       try {
-        const response = await fetch("http://localhost:3000/authorAPI/delete", {
+        const response = await fetch("http://localhost:3000/blogsAPI/delete", {
           method: "DELETE",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
             authorization: authState.token,
@@ -71,8 +71,9 @@ function Update() {
 
   const fetchData = async () => {
     try {
-      const response = await fetch("http://localhost:3000/authorAPI/update", {
+      const response = await fetch("http://localhost:3000/blogsAPI/update", {
         method: "GET",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           authorization: authState.token,
@@ -112,7 +113,7 @@ function Update() {
   // Function to send data to the backend API using fetch
   const sendDataToBackend = async (data) => {
     try {
-      const response = await fetch("http://localhost:3000/authorAPI/update", {
+      const response = await fetch("http://localhost:3000/blogsAPI/update", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -136,6 +137,10 @@ function Update() {
 
       // Hide signup form
       setResponseFromBackEnd(responseData.message);
+      localStorage.removeItem("token");
+      localStorage.removeItem("expire");
+      dispatch(authActions.logout());
+
       // Redirect to
       // useEffect(() => {
       //   const timeoutId = setTimeout(() => {
@@ -148,9 +153,9 @@ function Update() {
       //   return () => clearTimeout(timeoutId);
       // }, [history]);
 
-      // Redirect to "/login" after 1500 milliseconds (1.5 seconds)
+      // Redirect to "/home" after 1500 milliseconds (1.5 seconds)
       const timeoutId = setTimeout(() => {
-        navigateTo("/login");
+        navigateTo("/");
       }, 1500);
 
       // Cleanup the timeout on component unmount or if the redirect happens
