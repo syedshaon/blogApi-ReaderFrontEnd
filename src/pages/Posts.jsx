@@ -12,7 +12,7 @@ import { useSelector } from "react-redux";
 
 function Posts() {
   const authState = useSelector((state) => state.auth);
-  const [post, setPosts] = useState([]);
+  const [post, setPosts] = useState(null);
   const [msg, setMsg] = useState("");
   const [responseFromBackEnd, setResponseFromBackEnd] = useState(null);
   const navigateTo = useNavigate();
@@ -33,17 +33,18 @@ function Posts() {
       });
 
       const responseData = await response.json();
-      // console.log(responseData.post);
+      console.log(responseData);
 
       if (!response.ok) {
-        console.log(responseData.message);
+        // console.log(responseData.message);
+        setResponseFromBackEnd(responseData.message);
         // Handle error if needed
         return;
       }
       if (responseData.message) {
         // console.log(responseData.message);
         // Handle error if needed
-        setMsg(responseData.message);
+        setResponseFromBackEnd(responseData.message);
         return;
       }
 
@@ -102,8 +103,8 @@ function Posts() {
     <>
       <Navbar />
 
-      <div className="container mx-auto mt-8 mb-16  rounded shadow">
-        {responseFromBackEnd && <h3 className="response text-orange-500 text-xl font-bold container mx-auto ">{responseFromBackEnd}</h3>}
+      <div className="container min-h-[800px] mx-auto mt-8 mb-16  rounded shadow">
+        {responseFromBackEnd && <h3 className="response text-center text-orange-500 text-xl font-bold container mx-auto ">{responseFromBackEnd}</h3>}
         <div className="grid grid-cols-1  gap-4  ">
           {post && (
             <div className="bg-white p-4 ">
@@ -119,8 +120,8 @@ function Posts() {
             </div>
           )}
         </div>
-        <Comment_Show responseCommentsFromBackEnd={responseCommentsFromBackEnd} post={Comments} />
-        <Comment_add fetchComments={fetchComments} />
+        {post && <Comment_Show responseCommentsFromBackEnd={responseCommentsFromBackEnd} post={Comments} />}
+        {post && <Comment_add fetchComments={fetchComments} />}
       </div>
 
       <Footer />
