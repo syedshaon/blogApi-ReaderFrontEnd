@@ -20,7 +20,7 @@ const Navbar = () => {
   };
   const Logout = async () => {
     try {
-      const response = await fetch("http://localhost:3000/blogsAPI/signout", {
+      const response = await fetch("https://good-news-backend.onrender.com/blogsAPI/signout", {
         method: "POST",
         credentials: "include",
         headers: {
@@ -35,7 +35,8 @@ const Navbar = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("expire");
         dispatch(authActions.logout());
-        navigateTo("/");
+        // navigateTo("/");
+        window.location.reload();
       } else {
         console.log(responseData);
       }
@@ -45,21 +46,16 @@ const Navbar = () => {
   };
 
   return (
-    <header className="bg-emerald-100 bg-gradient-to-r from-emerald-100 to-emerald-200     py-5">
+    <header className="bg-emerald-100 bg-gradient-to-r from-white to-emerald-200     py-5">
       <div className="container  px-2 md:px-7  mx-auto    flex justify-between items-center">
         <NavLink to="/">
           <h1 className="flex items-start space-x-1">
-            <span className="text-black text-xl font-bold ">Author</span>
-            <span className="text-orange-600 text-xl font-bold ">Zone</span>
+            <span className="text-black text-xl font-bold ">Daily</span>
+            <span className="text-orange-600 text-xl font-bold ">Good News</span>
           </h1>
         </NavLink>
 
         <nav className="lg:flex hidden items-center space-x-30">
-          {/* <NavElmnt onClick={closeMenu}>
-              <NavLink to="/" className={({ isActive }) => (isActive ? "underline" : "notActive")} end>
-                Home
-              </NavLink>
-            </NavElmnt> */}
           {authState.isLoggedIn && <p className="mr-5">Hello {authState.firstName}!</p>}
 
           {authState.isLoggedIn && (
@@ -99,36 +95,41 @@ const Navbar = () => {
 
         {/* Mobile Menu Content */}
         {isMenuOpen && (
-          <nav className="lg:hidden fixed top-16 left-0 h-full w-full bg-fgreen bg-gradient-to-b from-emerald-100 to-emerald-100 ">
+          <nav className="lg:hidden fixed z-50 top-16 left-0 h-full w-full bg-fgreen bg-gradient-to-b from-white to-emerald-100 ">
             <ul className=" text-center p-4 flex flex-col items-center space-y-4">
-              <NavElmnt onClick={closeMenu}>
-                <NavLink to="/" className={({ isActive }) => (isActive ? "active" : "notActive")} end>
-                  Home
-                </NavLink>
-              </NavElmnt>
-              <NavElmnt onClick={closeMenu}>
-                <NavLink to="/team" className={({ isActive }) => (isActive ? "active" : "notActive")}>
-                  Team
-                </NavLink>
-              </NavElmnt>
-              <NavElmnt onClick={closeMenu}>
-                <NavLink to="/service" className={({ isActive }) => (isActive ? "active" : "notActive")}>
-                  Service
-                </NavLink>
-              </NavElmnt>
-              <NavElmnt onClick={closeMenu}>
-                <NavLink to="/projects" className={({ isActive }) => (isActive ? "active" : "notActive")}>
-                  Projects
-                </NavLink>
-              </NavElmnt>
-              <NavElmnt onClick={closeMenu}>
-                <NavLink to="/testimonials" className={({ isActive }) => (isActive ? "active" : "notActive")}>
-                  Testimonials
-                </NavLink>
-              </NavElmnt>
+              <NavElmnt onClick={closeMenu}>{authState.isLoggedIn && <p className=" text-center">Hello {authState.firstName}!</p>}</NavElmnt>
 
-              <Button text="Login" hoverBG="green" />
-              <Button text="Register" color="green" />
+              {authState.isLoggedIn && (
+                <NavElmnt onClick={closeMenu}>
+                  <NavLink to="/update">
+                    <Button text="Update Profile" color="emerald" />
+                  </NavLink>
+                </NavElmnt>
+              )}
+
+              {!authState.isLoggedIn && (
+                <NavElmnt onClick={closeMenu}>
+                  <NavLink to="/login">
+                    <Button text="Login" hoverBG="emerald" />
+                  </NavLink>
+                </NavElmnt>
+              )}
+
+              {!authState.isLoggedIn && (
+                <NavElmnt onClick={closeMenu}>
+                  <NavLink to="/signup">
+                    <Button text="Sign Up" color="emerald" />
+                  </NavLink>
+                </NavElmnt>
+              )}
+
+              {authState.isLoggedIn && (
+                <NavElmnt onClick={closeMenu}>
+                  <NavLink onClick={Logout}>
+                    <Button3 text="Logout" color="orange" />
+                  </NavLink>
+                </NavElmnt>
+              )}
             </ul>
           </nav>
         )}

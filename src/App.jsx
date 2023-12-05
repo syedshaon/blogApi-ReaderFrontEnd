@@ -14,7 +14,7 @@ function App() {
     // console.log("validation ran");
     if (localStorage.getItem("token")) {
       try {
-        const response = await fetch("http://localhost:3000/blogsAPI/validateLoginStatus", {
+        const response = await fetch("https://good-news-backend.onrender.com/blogsAPI/validateLoginStatus", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -23,7 +23,8 @@ function App() {
         });
 
         const responseData = await response.json();
-        // console.log(responseData);
+        console.log("Console Logging Intentionally. Coming from validateLoginStatus");
+        console.log(responseData);
         if (responseData.firstName) {
           dispatch(authActions.login({ firstName: responseData.firstName, token: localStorage.getItem("token"), expire: localStorage.getItem("expire") }));
         } else {
@@ -54,7 +55,7 @@ function App() {
     if (authState.token && timeDifferenceMs < 1) {
       console.log("RefreshJwtToken ran");
       try {
-        const response = await fetch("http://localhost:3000/blogsAPI/refresh", {
+        const response = await fetch("https://good-news-backend.onrender.com/blogsAPI/refresh", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -64,6 +65,8 @@ function App() {
 
         const responseData = await response.json();
         // console.log(responseData);
+        console.log("Console Logging Intentionally. Coming from RefreshJwtToken");
+        console.log(responseData);
         if (responseData.firstName) {
           dispatch(authActions.login({ firstName: responseData.firstName, token: responseData.token, expire: responseData.expire }));
         } else {

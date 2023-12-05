@@ -24,7 +24,7 @@ function Home() {
 
   const fetchData = async () => {
     try {
-      const response = await fetch("http://localhost:3000/blogsAPI/posts", {
+      const response = await fetch("https://good-news-backend.onrender.com/blogsAPI/posts", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -39,7 +39,7 @@ function Home() {
         return;
       }
       if (responseData.message) {
-        console.log(responseData.message);
+        // console.log(responseData.message);
         // Handle error if needed
         setMsg(responseData.message);
         return;
@@ -66,25 +66,28 @@ function Home() {
     <>
       <Navbar />
 
-      <div className="container mx-auto mt-8 mb-16">
-        <h1 className="text-3xl font-bold mb-4">{posts.length > 0 ? "All Posts" : "Posts Loading Soon."}</h1>
+      <div className="container mx-auto mt-8 mb-16 min-h-[800px]">
+        <h1 className="text-3xl font-bold mb-4">{posts.length ? "Posts Loading Soon." : ""}</h1>
         {responseFromBackEnd && <h3 className="response text-orange-500 text-xl font-bold container mx-auto text-center">{responseFromBackEnd}</h3>}
-        <div className="grid grid-cols-1  gap-4">
-          {posts.length > 0 &&
+        <div className="grid grid-cols-1 lg:grid-cols-2  gap-4">
+          {posts.length > 0 ? (
             posts.map((post) => (
               <NavLink to={`/posts/${post._id}`} key={post._id}>
                 <div className="bg-white p-4 rounded shadow">
-                  <h2 className="text-xl font-bold mb-2">{post.title}</h2>
-                  <p className="text-left text-sm">
+                  <h2 className="text-xl text-center font-bold mb-2">{post.title}</h2>
+                  <p className="text-center text-sm">
                     Posted By: {post.author.firstName} {post.author.lastName} , On: {post.timestamp ? new Date(post.timestamp).toISOString().split("T")[0] : "N/A"}
                   </p>
 
-                  <div className="mt-2 grid grid-cols-1 xl:grid-cols-4 gap-4  ">
-                    <div className="text col-span-3  " dangerouslySetInnerHTML={{ __html: post.text }}></div>
+                  <div className="mt-2   ">
+                    <div className="text    " dangerouslySetInnerHTML={{ __html: post.text }}></div>
                   </div>
                 </div>
               </NavLink>
-            ))}
+            ))
+          ) : (
+            <h1 className="text-3xl text-center font-bold mb-4">No News Published Yet!</h1>
+          )}
         </div>
       </div>
       <Footer />

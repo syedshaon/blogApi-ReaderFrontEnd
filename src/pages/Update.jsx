@@ -38,7 +38,7 @@ function Update() {
     const userConfirmed = confirm("Do you want to delete your account?");
     if (userConfirmed) {
       try {
-        const response = await fetch("http://localhost:3000/blogsAPI/delete", {
+        const response = await fetch("https://good-news-backend.onrender.com/blogsAPI/delete", {
           method: "DELETE",
           credentials: "include",
           headers: {
@@ -71,7 +71,7 @@ function Update() {
 
   const fetchData = async () => {
     try {
-      const response = await fetch("http://localhost:3000/blogsAPI/update", {
+      const response = await fetch("https://good-news-backend.onrender.com/blogsAPI/update", {
         method: "GET",
         credentials: "include",
         headers: {
@@ -113,7 +113,7 @@ function Update() {
   // Function to send data to the backend API using fetch
   const sendDataToBackend = async (data) => {
     try {
-      const response = await fetch("http://localhost:3000/blogsAPI/update", {
+      const response = await fetch("https://good-news-backend.onrender.com/blogsAPI/update", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -179,7 +179,7 @@ function Update() {
     authState.isLoggedIn && (
       <>
         <Navbar />
-        <div className="bg-emerald-100 h-screen relative lg:py-20">
+        <div className="bg-emerald-100 h-screen relative pt-10 lg:py-20">
           <div className="  mx-auto text-center">
             <span onClick={deleteAccount}>
               <Button3 color={"orange"} text={"Delete  My Account."} />

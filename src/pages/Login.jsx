@@ -51,7 +51,7 @@ function Login() {
   // Function to send data to the backend API using fetch
   const sendDataToBackend = async (data) => {
     try {
-      const response = await fetch("http://localhost:3000/blogsAPI/signin", {
+      const response = await fetch("https://good-news-backend.onrender.com/blogsAPI/signin", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -71,7 +71,7 @@ function Login() {
       }
       // Handle the successful response (if needed)
       const responseData = await response.json();
-      console.log("Response from backend:", responseData);
+      // console.log("Response from backend:", responseData);
 
       localStorage.setItem("token", responseData.token);
       localStorage.setItem("expire", responseData.expire);

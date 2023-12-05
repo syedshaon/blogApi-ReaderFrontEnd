@@ -6,15 +6,8 @@ import { useParams } from "react-router-dom";
 
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-
-// const postsData = [
-//   {
-//     _id: 1,
-//     title: "Sample Post",
-//     text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. ipsum dolor sit amet, consectetur adipiscing elit. ipsum dolor sit amet, consectetur adipiscing elit. ...",
-//   },
-//   // Add more posts as needed
-// ];
+import Comment_add from "./Comment_add";
+import Comment_Show from "./Comment_Show";
 
 function Posts() {
   const authState = useSelector((state) => state.auth);
@@ -23,11 +16,15 @@ function Posts() {
   const [responseFromBackEnd, setResponseFromBackEnd] = useState(null);
   const navigateTo = useNavigate();
 
+  const [CommentsMsg, setCommentsMsg] = useState([]);
+  const [Comments, setComments] = useState("");
+  const [responseCommentsFromBackEnd, setCommentsResponseFromBackEnd] = useState(null);
+
   const { postId } = useParams();
 
   const fetchData = async () => {
     try {
-      const response = await fetch("http://localhost:3000/blogsAPI/posts/" + postId, {
+      const response = await fetch("https://good-news-backend.onrender.com/blogsAPI/posts/" + postId, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -56,8 +53,42 @@ function Posts() {
     }
   };
 
+  const fetchComments = async () => {
+    try {
+      const response = await fetch("https://good-news-backend.onrender.com/blogsAPI/comments/" + postId, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: authState.token,
+        },
+      });
+
+      const responseData = await response.json();
+      // console.log(responseData);
+
+      if (!response.ok) {
+        console.log(responseData.message);
+        // Handle error if needed
+        setCommentsResponseFromBackEnd(responseData.message);
+        return;
+      }
+      if (responseData.message) {
+        // console.log(responseData.message);
+        // Handle error if needed
+        setCommentsMsg(responseData.message);
+        return;
+      }
+
+      setComments(responseData.posts);
+    } catch (error) {
+      console.log(error);
+      // Handle error if needed
+    }
+  };
+
   useEffect(() => {
     fetchData();
+    fetchComments();
   }, []);
 
   const DateFormat = {
@@ -70,24 +101,27 @@ function Posts() {
     <>
       <Navbar />
 
-      <div className="container mx-auto mt-8 mb-16">
-        {responseFromBackEnd && <h3 className="response text-orange-500 text-xl font-bold container mx-auto text-center">{responseFromBackEnd}</h3>}
-        <div className="grid grid-cols-1  gap-4">
+      <div className="container mx-auto mt-8 mb-16  rounded shadow">
+        {responseFromBackEnd && <h3 className="response text-orange-500 text-xl font-bold container mx-auto ">{responseFromBackEnd}</h3>}
+        <div className="grid grid-cols-1  gap-4  ">
           {post && (
-            <div className="bg-white p-4 rounded shadow">
+            <div className="bg-white p-4 ">
               <h2 className="text-xl font-bold mb-2">{post.title}</h2>
               {post.author && (
-                <p className="text-left text-sm">
+                <p className=" text-sm">
                   Posted By: {post.author.firstName} {post.author.lastName} , On: {post.timestamp ? new Date(post.timestamp).toISOString().split("T")[0] : "N/A"}
                 </p>
               )}
-              <div className="mt-2 grid grid-cols-1 xl:grid-cols-4 gap-4  ">
+              <div className="mt-2   ">
                 <div className="text col-span-3  " dangerouslySetInnerHTML={{ __html: post.text }}></div>
               </div>
             </div>
           )}
         </div>
+        <Comment_Show responseCommentsFromBackEnd={responseCommentsFromBackEnd} post={Comments} />
+        <Comment_add fetchComments={fetchComments} />
       </div>
+
       <Footer />
     </>
   );
