@@ -1,13 +1,14 @@
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import Comment_add from "./Comment_add";
+import Comment_Show from "./Comment_Show";
+
 import { NavLink } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import Comment_add from "./Comment_add";
-import Comment_Show from "./Comment_Show";
 
 function Posts() {
   const authState = useSelector((state) => state.auth);
