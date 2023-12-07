@@ -24,7 +24,7 @@ function Home() {
 
   const fetchData = async () => {
     try {
-      const response = await fetch("https://good-news-backend.onrender.com/blogsAPI/posts", {
+      const response = await fetch(authState.backendURL + "blogsAPI/posts", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -74,13 +74,15 @@ function Home() {
             posts.map((post) => (
               <NavLink to={`/posts/${post._id}`} key={post._id}>
                 <div className="bg-white p-4 rounded shadow">
+                  <img className="mx-auto" src={authState.backendURL + post.thumbnail} alt="post thumbnail"></img>
                   <h2 className="text-xl text-center font-bold mb-2">{post.title}</h2>
                   <p className="text-center text-sm">
                     Posted By: {post.author.firstName} {post.author.lastName} , On: {post.timestamp ? new Date(post.timestamp).toISOString().split("T")[0] : "N/A"}
                   </p>
 
                   <div className="mt-2   ">
-                    <div className="text    " dangerouslySetInnerHTML={{ __html: post.text }}></div>
+                    {/* <div className="text    " dangerouslySetInnerHTML={{ __html: post.text }}></div> */}
+                    <p className="text-sm">{post.excerpt}</p>
                   </div>
                 </div>
               </NavLink>

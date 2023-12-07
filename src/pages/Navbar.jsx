@@ -20,7 +20,7 @@ const Navbar = () => {
   };
   const Logout = async () => {
     try {
-      const response = await fetch("https://good-news-backend.onrender.com/blogsAPI/signout", {
+      const response = await fetch(authState.backendURL + "blogsAPI/signout", {
         method: "POST",
         credentials: "include",
         headers: {

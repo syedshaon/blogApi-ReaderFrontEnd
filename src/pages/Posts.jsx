@@ -25,7 +25,7 @@ function Posts() {
 
   const fetchData = async () => {
     try {
-      const response = await fetch("https://good-news-backend.onrender.com/blogsAPI/posts/" + postId, {
+      const response = await fetch(authState.backendURL + "blogsAPI/posts/" + postId, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -33,7 +33,7 @@ function Posts() {
       });
 
       const responseData = await response.json();
-      console.log(responseData);
+      // console.log(responseData);
 
       if (!response.ok) {
         // console.log(responseData.message);
@@ -57,7 +57,7 @@ function Posts() {
 
   const fetchComments = async () => {
     try {
-      const response = await fetch("https://good-news-backend.onrender.com/blogsAPI/comments/" + postId, {
+      const response = await fetch(authState.backendURL + "blogsAPI/comments/" + postId, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -108,6 +108,8 @@ function Posts() {
         <div className="grid grid-cols-1  gap-4  ">
           {post && (
             <div className="bg-white p-4 ">
+              <img className="mx-auto" src={authState.backendURL + post.thumbnail} alt="post thumbnail"></img>
+              <p className="text-sm">{post.excerpt}</p>
               <h2 className="text-xl font-bold mb-2">{post.title}</h2>
               {post.author && (
                 <p className=" text-sm">

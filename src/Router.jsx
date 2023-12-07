@@ -8,9 +8,9 @@ import Signup from "./pages/Signup";
 // import Testimonials from "./pages/Testimonials";
 import ErrorPage from "./pages/ErrorPage";
 import Update from "./pages/Update";
-import Create_Post from "./pages/Create_Post";
+// import Create_Post from "./pages/Create_Post";
+// import PostEdit from "./pages/PostEdit";
 import { useSelector } from "react-redux";
-import PostEdit from "./pages/PostEdit";
 
 const Router = () => {
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
@@ -24,8 +24,8 @@ const Router = () => {
         <Route path="/signup" element={<Signup />} />
         <Route path="/update" element={isLoggedIn ? <Update /> : <Home />} />
         {/* <Route path="/logout" element={<Testimonials />} /> */}
-        <Route path="/new_post" element={isLoggedIn ? <Create_Post /> : <Login />} />
-        <Route path="/editpost/:postId" element={isLoggedIn ? <PostEdit /> : <Login />} />
+        {/* <Route path="/new_post" element={isLoggedIn ? <Create_Post /> : <Login />} />
+        <Route path="/editpost/:postId" element={isLoggedIn ? <PostEdit /> : <Login />} /> */}
         <Route path="/products/:productId" element={<Home />} />
         <Route path="*" element={<ErrorPage />} />
       </Routes>

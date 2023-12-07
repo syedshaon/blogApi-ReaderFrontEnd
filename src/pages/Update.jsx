@@ -38,7 +38,7 @@ function Update() {
     const userConfirmed = confirm("Do you want to delete your account?");
     if (userConfirmed) {
       try {
-        const response = await fetch("https://good-news-backend.onrender.com/blogsAPI/delete", {
+        const response = await fetch(authState.backendURL + "blogsAPI/delete", {
           method: "DELETE",
           credentials: "include",
           headers: {
@@ -71,7 +71,7 @@ function Update() {
 
   const fetchData = async () => {
     try {
-      const response = await fetch("https://good-news-backend.onrender.com/blogsAPI/update", {
+      const response = await fetch(authState.backendURL + "blogsAPI/update", {
         method: "GET",
         credentials: "include",
         headers: {
@@ -113,7 +113,7 @@ function Update() {
   // Function to send data to the backend API using fetch
   const sendDataToBackend = async (data) => {
     try {
-      const response = await fetch("https://good-news-backend.onrender.com/blogsAPI/update", {
+      const response = await fetch(authState.backendURL + "blogsAPI/update", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

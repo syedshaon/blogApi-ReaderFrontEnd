@@ -34,7 +34,7 @@ function Comment_add({ fetchComments }) {
   // Function to send data to the backend API using fetch
   const sendDataToBackend = async (data) => {
     try {
-      const response = await fetch("https://good-news-backend.onrender.com/blogsAPI/comments", {
+      const response = await fetch(authState.backendURL + "blogsAPI/comments", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
