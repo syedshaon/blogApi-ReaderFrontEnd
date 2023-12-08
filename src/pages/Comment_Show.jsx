@@ -11,9 +11,9 @@ function Comment_Show({ responseCommentsFromBackEnd, post }) {
   return (
     <>
       <div className="container mx-auto mt-8 mb-16 p-3 rounded shadow">
-        {responseCommentsFromBackEnd && <h3 className="response text-orange-500 text-xl font-bold container mx-auto ">{responseCommentsFromBackEnd}</h3>}
+        {responseCommentsFromBackEnd && <h3 className="response text-orange-600 text-xl font-bold container mx-auto ">{responseCommentsFromBackEnd}</h3>}
         <div className="  gap-4  ">
-          <h2 className="text-orange-500  text-xl border-orange-500 border-b-8">{post.length > 0 ? "Previous Comments" : "No Comments yet. Add One?"}</h2>
+          <h2 className="text-orange-500  text-xl border-orange-600 border-b-8">{post.length > 0 ? "Previous Comments" : "No Comments yet. Add One?"}</h2>
           {post.length > 0 &&
             post.map((post) => (
               <div key={post._id} className="bg-white p-4 rounded shadow">

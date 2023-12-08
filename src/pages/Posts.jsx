@@ -108,17 +108,11 @@ function Posts() {
         <div className="grid grid-cols-1  gap-4  ">
           {post && (
             <div className="bg-white p-4 ">
-              <img className="mx-auto" src={authState.backendURL + post.thumbnail} alt="post thumbnail"></img>
-              <p className="text-sm">{post.excerpt}</p>
-              <h2 className="text-xl font-bold mb-2">{post.title}</h2>
-              {post.author && (
-                <p className=" text-sm">
-                  Posted By: {post.author.firstName} {post.author.lastName} , On: {post.timestamp ? new Date(post.timestamp).toISOString().split("T")[0] : "N/A"}
-                </p>
-              )}
-              <div className="mt-2   ">
-                <div className="text col-span-3  " dangerouslySetInnerHTML={{ __html: post.text }}></div>
-              </div>
+              {post.thumbnail && <img className="mx-auto" src={authState.backendURL + post.thumbnail} alt="post thumbnail"></img>}
+              {post.excerpt && <p className="text-sm p-2 bg-emerald-50">{post.excerpt}</p>}
+              <h2 className="text-xl pb-2  border-b-8  border-orange-600   mt-10 font-bold mb-2">{post.title}</h2>
+              <p className=" ">Published On: {post.timestamp ? new Date(post.timestamp).toISOString().split("T")[0] : "N/A"}</p>
+              <div className="text  mt-10  " dangerouslySetInnerHTML={{ __html: post.text }}></div>
             </div>
           )}
         </div>

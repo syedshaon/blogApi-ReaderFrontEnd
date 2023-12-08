@@ -85,7 +85,7 @@ function Comment_add({ fetchComments }) {
   return authState.isLoggedIn ? (
     <>
       <div className="  relative lg:py-20">
-        {responseFromBackEnd && <h3 className="response text-orange-500 text-xl font-bold container mx-auto text-center">{responseFromBackEnd}</h3>}
+        {responseFromBackEnd && <h3 className="response text-orange-600 text-xl font-bold container mx-auto text-center">{responseFromBackEnd}</h3>}
         <div
           className="flex flex-col items-center justify-between pt-0 pr-10 pb-0 pl-10 mt-0 mr-auto mb-0 ml-auto max-w-7xl
       xl:px-5 lg:flex-row"
@@ -105,17 +105,12 @@ function Comment_add({ fetchComments }) {
                       type="text"
                       className="border placeholder-gray-400 focus:outline-none
                   focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white
-                  border-gray-300 rounded-md"
+                  border-orange-300 rounded-md"
                     />
                   </div>
 
                   <div className="relative">
-                    <button
-                      className="w-full inline-block pt-4 pr-5 pb-4 pl-5 text-xl font-medium text-center text-white bg-emerald-500
-                  rounded-lg transition duration-200 hover:bg-emerald-600 ease"
-                    >
-                      Submit
-                    </button>
+                    <button className="w-full inline-block pt-4 pr-5 pb-4 pl-5 text-xl font-medium text-center text-orange-600     border-orange-600  border                  rounded-lg transition duration-200 hover:bg-orange-600 hover:text-white ease">Submit</button>
                   </div>
                 </div>
               </form>
@@ -125,7 +120,7 @@ function Comment_add({ fetchComments }) {
       </div>
     </>
   ) : (
-    <h2 className="text-orange-500 p-5 pb-5 text-xl mb-40 border-orange-500 border-b-8"> Please Log In to Add Comments.</h2>
+    <h2 className="text-orange-600 p-5 pb-5 text-xl mb-40 border-orange-600 border-b-8"> Please Log In to Add Comments.</h2>
   );
 }
 

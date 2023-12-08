@@ -74,16 +74,10 @@ function Home() {
             posts.map((post) => (
               <NavLink to={`/posts/${post._id}`} key={post._id}>
                 <div className="bg-white p-4 rounded shadow">
-                  <img className="mx-auto" src={authState.backendURL + post.thumbnail} alt="post thumbnail"></img>
-                  <h2 className="text-xl text-center font-bold mb-2">{post.title}</h2>
-                  <p className="text-center text-sm">
-                    Posted By: {post.author.firstName} {post.author.lastName} , On: {post.timestamp ? new Date(post.timestamp).toISOString().split("T")[0] : "N/A"}
-                  </p>
-
-                  <div className="mt-2   ">
-                    {/* <div className="text    " dangerouslySetInnerHTML={{ __html: post.text }}></div> */}
-                    <p className="text-sm">{post.excerpt}</p>
-                  </div>
+                  {post.thumbnail && <img className="mx-auto" src={authState.backendURL + post.thumbnail} alt="post thumbnail"></img>}
+                  {post.excerpt && <p className="text-sm p-2 bg-emerald-50">{post.excerpt}</p>}
+                  <h2 className="text-xl pb-2  border-b-4  border-orange-600   mt-10 font-bold mb-2">{post.title}</h2>
+                  <p className=" ">Published On: {post.timestamp ? new Date(post.timestamp).toISOString().split("T")[0] : "N/A"}</p>
                 </div>
               </NavLink>
             ))
